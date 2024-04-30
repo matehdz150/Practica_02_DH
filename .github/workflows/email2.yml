@@ -16,7 +16,7 @@ jobs:
 
     - name: Send email
       env:
-        SENDGRID_API_KEY: ${{ secrets.API_KEY }}
+        API_KEY: ${{ secrets.API_KEY }}
         TO_EMAIL: mateeldemoledor@gmail.com
       run: |
         branch=$(git rev-parse --abbrev-ref HEAD)
