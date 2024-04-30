@@ -1,0 +1,27 @@
+name: Send Email On Commit
+
+on:
+  push:
+    branches:
+      - main
+      - feature_a
+      - feature_b
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Send email
+      env:
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        TO_EMAIL: ${{ secrets.TO_EMAIL }}
+      run: |
+        branch=$(git rev-parse --abbrev-ref HEAD)
+        echo "Changes have been made on branch: $branch" | mailx -r "from@example.com" -s "Commit on branch $branch" $TO_EMAIL

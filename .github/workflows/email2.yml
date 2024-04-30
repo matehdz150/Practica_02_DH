@@ -1,0 +1,28 @@
+
+name: Send Email On Commit
+
+on:
+  push:
+    branches:
+      - feature_b
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Send email
+      env:
+        SENDGRID_API_KEY: ${{ secrets.API_KEY }}
+        TO_EMAIL: mateeldemoledor@gmail.com
+      run: |
+        branch=$(git rev-parse --abbrev-ref HEAD)
+        echo "{\"personalizations\": [{\"to\": [{\"email\": \"$TO_EMAIL\"}]}], \"from\": {\"email\": \"from@example.com\"}, \"subject\": \"Commit on branch $branch\", \"content\": [{\"type\": \"text/plain\", \"value\": \"Changes have been made on branch: $branch\"}]}" > email.json
+        curl --request POST \
+          --url https://api.sendgrid.com/v3/mail/send \
+          --header "Authorization: Bearer $SENDGRID_API_KEY" \
+          --header 'Content-Type: application/json' \
+          --data @email.json
